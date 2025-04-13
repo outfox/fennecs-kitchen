@@ -23,13 +23,14 @@ RUN adduser --disabled-password \
     --gecos "Default user" \
     --uid ${NB_UID} \
     ${NB_USER}
+    
 
 # Create and activate virtual environment
-RUN python3 -m venv $HOME/venv
-ENV PATH="$HOME/venv/bin:$PATH"
+#RUN python3 -m venv $HOME/venv
+#ENV PATH="$HOME/venv/bin:$PATH"
 
 # Install Jupyter in the virtual environment
-RUN pip install --no-cache-dir \
+RUN pip install --break-system-packages --no-cache-dir \
     jupyter \
     notebook \
     jupyterlab \
@@ -46,12 +47,14 @@ RUN dotnet interactive jupyter install
 # Create a workspace directory
 #RUN mkdir -p $HOME/workspace
 #WORKDIR $HOME/workspace
-WORKDIR $HOME
-
-# Copy Cookbooks
-COPY *.ipynb .
 
 # Make sure the contents of our repo are in ${HOME}
 USER root
-RUN chown -R ${NB_UID} ${HOME}
-USER ${NB_USER}
+RUN chown -R jovyan ${HOME}
+
+# Copy Cookbooks
+USER jovyan
+WORKDIR $HOME
+COPY . .
+
+

@@ -13,15 +13,16 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Set non-root user
-ENV USER="jovyan"
-RUN useradd -ms /bin/bash $USER
-USER $USER 
-ENV HOME="/home/$USER"
-WORKDIR $HOME
+ARG NB_USER=jovyan
+ARG NB_UID=1000
+ENV USER=${NB_USER}
+ENV NB_UID=${NB_UID}
+ENV HOME=/home/${NB_USER}
 
-# Create a workspace directory
-RUN mkdir -p $HOME/workspace
-WORKDIR $HOME/workspace
+RUN adduser --disabled-password \
+    --gecos "Default user" \
+    --uid ${NB_UID} \
+    ${NB_USER}
 
 # Create and activate virtual environment
 RUN python3 -m venv $HOME/venv
@@ -30,6 +31,7 @@ ENV PATH="$HOME/venv/bin:$PATH"
 # Install Jupyter in the virtual environment
 RUN pip install --no-cache-dir \
     jupyter \
+    notebook \
     jupyterlab \
     ipykernel
 
@@ -37,9 +39,19 @@ RUN pip install --no-cache-dir \
 RUN dotnet tool install -g --add-source "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json" Microsoft.dotnet-interactive
 ENV PATH="/${HOME}/.dotnet/tools:${PATH}"
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+ENV NUGET_XMLDOC_MODE=skip
 RUN dotnet interactive jupyter install
 
-# Run Jupyter Notebook from the workspace directory
-EXPOSE 8888
-WORKDIR $HOME/workspace
-ENTRYPOINT ["jupyter", "lab", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.notebook_dir=$HOME/workspace"]
+# Create a workspace directory
+#RUN mkdir -p $HOME/workspace
+#WORKDIR $HOME/workspace
+WORKDIR $HOME
+
+# Copy Cookbooks
+COPY *.ipynb .
+
+# Make sure the contents of our repo are in ${HOME}
+USER root
+RUN chown -R ${NB_UID} ${HOME}
+USER ${NB_USER}

@@ -56,3 +56,6 @@ RUN chown -R jovyan ${HOME}
 COPY settings /usr/local/share/jupyter/lab/settings
 
 USER jovyan
+
+COPY book ${HOME}/workspace
+

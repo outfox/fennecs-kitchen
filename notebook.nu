@@ -1,1 +1,1 @@
-docker run -it --rm -p 8888:8888 -v $"($env.PWD)/book:/home/jovyan/workspace" fennecs-kitchen jupyter notebook --ip=0.0.0.0 --port=8888 --NotebookApp.default_url="/notebooks/hello.ipynb?factory=rise" --NotebookApp.theme="JupyterLab dark"
+docker run -it --rm -p 8888:8888  fennecs-kitchen jupyter notebook --ip=0.0.0.0 --port=8888 --NotebookApp.default_url="/notebooks/hello.ipynb?factory=rise" --NotebookApp.theme="JupyterLab dark"

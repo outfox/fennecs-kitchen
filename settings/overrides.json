@@ -1,0 +1,12 @@
+{
+    "@jupyterlab/apputils-extension:themes": {
+      "theme": "JupyterLab Dark"
+    },
+    "@jupyterlab/apputils-extension:notification": {
+        "fetchNews": "false"
+      },
+
+      "@jupyter-notebook/application-extension:top": {
+        "visible": "no"
+      }    
+  }

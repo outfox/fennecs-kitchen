@@ -33,8 +33,9 @@ RUN adduser --disabled-password \
 RUN pip install --break-system-packages --no-cache-dir \
     jupyter \
     notebook \
+    jupyter_contrib_nbextensions \
     jupyterlab \
-    ipykernel
+    jupyterlab-rise 
 
 # Install .NET kernel
 RUN dotnet tool install -g --add-source "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json" Microsoft.dotnet-interactive
@@ -45,16 +46,13 @@ ENV NUGET_XMLDOC_MODE=skip
 RUN dotnet interactive jupyter install
 
 # Create a workspace directory
-#RUN mkdir -p $HOME/workspace
-#WORKDIR $HOME/workspace
+RUN mkdir -p $HOME/workspace
+WORKDIR $HOME/workspace
 
 # Make sure the contents of our repo are in ${HOME}
 USER root
 RUN chown -R jovyan ${HOME}
 
-# Copy Cookbooks
+COPY settings /usr/local/share/jupyter/lab/settings
+
 USER jovyan
-WORKDIR $HOME
-COPY . .
-
-
